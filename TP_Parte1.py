@@ -1,4 +1,6 @@
-# Paquetes
+# Programa para una agencia de venta de paquetes turisticos, el que lo usa es el empleado de la agencia
+
+# Matriz de paquetes hardcodeada
 # [Destino, Días, Aerolínea, Hotel, Precio]
 
 paquetes = [
@@ -25,81 +27,108 @@ paquetes = [
     ["Paris", 7, "Air France", "Hotel Parisien", 1700],
     ["Paris", 5, "Air France", "Hotel Parisien", 1400]
 ]
-    
+
+#Funcion para agregar paquetes a la matriz
 def agregar_paquete(paquetes, destino, dias, transporte, hotel, precio):
     paquete = [destino, dias, transporte, hotel, precio]
     paquetes.append(paquete)
 
+#Funcion para mostrar los paquetes (pueden ser todos o algunos dependiendo la busqueda)
 def mostrar_paquetes(disponibles):
-    print("Paquetes disponiles:")
-    for paquete in disponibles:
-        print(f"Destino: {paquete[0]}, Días: {paquete[1]}, Aerolínea: {paquete[2]}, Hotel: {paquete[3]}, Precio: {paquete[4]}$")
-    
+    if disponibles:
+        print("Paquetes disponibles: ")
+        print("")
+        print(f"{'Destino':^18} | {'Dias':^5} | {'Aerolinea':^25} | {'Hotel':^30} | {'Precio':^8}")
+        print("-" * 99)
+        for paquete in disponibles:
+            print(f"{paquete[0]:18} {paquete[1]:^8}   {paquete[2]:27} {paquete[3]:32} {paquete[4]:>5}$")
+    else:
+        print("No se encontraron paquetes disponibles")
+
+#Funcion Lambda para descuento, se tendria que poner en la parte de la reserva
+calcular_descuento = lambda precio, edad: precio * 0.95 if edad > 60 else precio
+
 #Programa Principal
 
-print("--- Sistema de búsqueda y reserva de paquetes turísticos ---")
+print("--- Sistema de busqueda y reserva de paquetes turísticos ---")
 
 opcion = 0
 while opcion != 5:
     print("\n1. Agregar paquete")
-    print("2. Buscar paquete por destino") #Aca sino también puede ser un buscar y que te de opciones tipo destino, precio, dias
+    print("2. Buscar paquete") 
     print("3. Reservar paquete")
     print("4. Mostrar todos los paquetes disponibles")
     print("5. Salir")
         
-    opcion = int(input("\nSeleccione una opción: "))
+    opcion = int(input("\nSeleccione una opcion: "))
     print()
     
     if opcion == 1:
         destino = input("Ingrese el destino: ")
-        dias = int(input("Ingrese la cantidad de días: "))
-        transporte = input("Ingrese la aerolínea: ")
+        dias = int(input("Ingrese la cantidad de dias: "))
+        transporte = input("Ingrese la aerolinea: ")
         hotel = input("Ingrese el nombre del hotel: ")
         precio = int(input("Ingrese el precio: "))
         agregar_paquete(paquetes, destino, dias, transporte, hotel, precio)
-        print("Paquete agregado con éxito.")
+        print("Paquete agregado con exito.")
 
     elif opcion == 2:
-        print("Seleccione el criterio de búsqueda:")
+        print("Seleccione el criterio de busqueda:")
         print("1. Por destino")
-        print("2. Por días")
+        print("2. Por dias")
         print("3. Por precio")
         
-        criterio_opcion = int(input("Ingrese el número de la opción: "))
+        #Diccionario de funciones
+        #Destino busqueda por destino
+        #Clave 'Destino', valor la funcion
+        
+        criterio_opcion = int(input("Ingrese el número de la opcion: "))
         print()
 
         if criterio_opcion == 1:
             destino = input("Ingrese el destino que desea buscar: ")
             encontrados = [paquete for paquete in paquetes if paquete[0] == destino]
-        
-            if encontrados:
-                mostrar_paquetes(encontrados)
-            else:
-                print("No se encontró ningún paquete con ese destino.")
+            mostrar_paquetes(encontrados)
 
         elif criterio_opcion == 2:
-            dias = int(input("Ingrese la cantidad de días que desea buscar: "))
+            dias = int(input("Ingrese la cantidad de dias que desea buscar: "))
             encontrados = [paquete for paquete in paquetes if paquete[1] == dias]
-        
-            if encontrados:
-               mostrar_paquetes(encontrados)
-            else:
-                print("No se encontró ningún paquete con esa cantidad de días.")
+            mostrar_paquetes(encontrados)
 
         elif criterio_opcion == 3:
-            precio = int(input("Ingrese el precio máximo que desea buscar: "))
+            precio = int(input("Ingrese el precio maximo que desea buscar: "))
             encontrados = [paquete for paquete in paquetes if paquete[4] <= precio]
-        
-            if encontrados:
-                mostrar_paquetes(encontrados)
-            else:
-                print("No se encontró ningún paquete dentro del rango de precio.")
+            mostrar_paquetes(encontrados)
 
         else:
-            print("Opción no válida. Por favor, intente nuevamente.")
+            print("Opcion no valida. Por favor, intente nuevamente")
+        
+        reservar = input("¿Desea reservar este paquete? (si/no): ")
+        if reservar == "si":
+            print("Paquete reservado con exito.") #ACA ES DONDE ENTRA LA PARTE DE RESERVA
+        else:
+            print("No se realizo la reserva.")
+        
+        #PARTE EN PROCESO
+        print("\n--- Reserva de Paquete ---")
+    
+        fecha_viaje = input("Ingrese la fecha del viaje (dd/mm/yyyy): ")
+        cantidad_personas = int(input("¿Cuántas personas van a viajar?: "))
+    
+        clientes = set()  # conjunto para almacenar los clientes sin duplicados
+        for i in range(cantidad_personas):
+            print(f"Cliente {i+1}:")
+            nombre = input("Ingrese el nombre del cliente: ")
+            dni = int(input("Ingrese el DNI del cliente: "))
+            edad = int(input("Ingrese la edad del cliente: "))
+        
+        # Diccionario con lista adentro {ID: [nombre, dni, edad]}
+        #Hasta aca ah
+    
+        print("¡Reserva realizada con exito!\n")
            
     elif opcion == 3:
-        print("Paquete reservado")
+        print("Funcion en proceso")
 
     elif opcion == 4:
         mostrar_paquetes(paquetes)
@@ -108,4 +137,4 @@ while opcion != 5:
         print("Saliendo del sistema...")
         
     else:
-        print("Opción no válida. Por favor, intente nuevamente.")
+        print("Opcion no valida. Por favor, intente nuevamente")
