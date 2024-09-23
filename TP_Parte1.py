@@ -1,39 +1,7 @@
 # Programa para una agencia de venta de paquetes turisticos, el que lo usa es el empleado de la agencia
-# Matriz de paquetes hardcodeada
-# [Destino, Dias, Aerolinea, Hotel, Precio, Disponibilidad]
 
 import time
-
-paquetes = [
-    ["Barcelona", 6, "Iberia", "Hotel NH Barcelona", 1450, 12],
-    ["Berlin", 6, "Lufthansa", "Berlin Plaza Hotel", 1500, 10],
-    ["Berlin", 8, "Delta Airlines", "Berlin Central Hotel", 1600, 8],
-    ["Ciudad de Mexico", 9, "Aeromexico", "Hotel CDMX", 1350, 4],
-    ["Londres", 4, "British Airways", "The London Inn", 1500, 5],
-    ["Londres", 5, "Aerolineas Argentinas", "The London Inn", 1550, 8],
-    ["Londres", 5, "British Airways", "The London Inn", 1450, 2],
-    ["Londres", 6, "Lufthansa", "The London Inn", 1600, 2],
-    ["Madrid", 7, "Iberia", "Hotel Madrid Centro", 1550, 9],
-    ["Madrid", 5, "Air Europa", "Hotel Madrid Centro", 1500, 3],
-    ["Nueva Delhi", 8, "British Airways", "Delhi Palace Hotel", 2100, 10],
-    ["Nueva York", 10, "Aerolineas Argentinas", "NYC Plaza", 1800, 8],
-    ["Nueva York", 12, "Delta Airlines", "NYC Plaza", 1900, 12],
-    ["Nueva York", 8, "Delta Airlines", "The Central Park North", 1600, 2],
-    ["Rio de Janeiro", 7, "LATAM Airlines", "Hotel Atlantico Copacabana", 1050, 10],
-    ["Rio de Janeiro", 5, "Aerolinas Argentinas", "Hotel Atlantico Copacabana", 900, 5],
-    ["Rio de Janeiro", 10, "LATAM Airlines", "Hotel Atlantico Copacabana", 1250, 20],
-    ["Seul", 5, "Delta Airlines", "Seoul Central Hotel", 1450, 15],
-    ["Sidney", 8, "Delta Airlines", "Sydney Harbour Hotel", 2200, 4],
-    ["Tokyo", 7, "Delta Airlines", "Tokyo Grand Hotel", 2000, 5],
-    ["Paris", 7, "Air France", "Hotel Parisien", 1700, 8],
-    ["Paris", 5, "Air France", "Hotel Parisien", 1400, 9]
-]
-
-# Lista de los nombres de los meses
-nombres_meses = [
-    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-]
+import random
 
 # Funcion de convertir numeros a palabras
 def numero_a_palabras(numero):
@@ -52,28 +20,44 @@ def numero_a_palabras(numero):
         else:
             return decenas[numero // 10] + " y " + unidades[numero % 10]
     else:
-        return str(numero)
+        return numero
 
-# Funcion de convertir fecha a palabras
-def print_fechas(viaje_anio, viaje_mes, viaje_dia, anio_actual, mes_actual, dia_actual):
-    # compara fechas y error si son fechas anteriores
+# Funcion de verificar si un año es bisiesto
+def es_bisiesto(anio):
+    return anio % 4 == 0 and (anio % 100 != 0 or anio % 400 == 0)
+
+# Funcion de validar la fecha
+def validar_fecha(viaje_anio, viaje_mes, viaje_dia, anio_actual, mes_actual, dia_actual):
+    if viaje_mes < 1 or viaje_mes > 12:
+        print("Mes no valido. Por favor, intente nuevamente.")
+        return True
+    if viaje_dia < 1:
+        print("Dia no valido. Por favor, intente nuevamente.")
+        return True
+    if viaje_mes in [4, 6, 9, 11] and viaje_dia > 30:
+        print("Dia no valido para el mes dado. Por favor, intente nuevamente.")
+        return True
+    if viaje_mes == 2:
+        if es_bisiesto(viaje_anio) and viaje_dia > 29:
+            print("Dia no valido para febrero en un año bisiesto. Por favor, intente nuevamente.")
+            return True
+        elif not es_bisiesto(viaje_anio) and viaje_dia > 28:
+            print("Dia no valido para febrero en un año no bisiesto. Por favor, intente nuevamente.")
+            return True
+    if viaje_dia > 31:
+        print("Dia no valido. Por favor, intente nuevamente.")
+        return True
     if (viaje_anio < anio_actual) or (viaje_anio == anio_actual and viaje_mes < mes_actual) or (viaje_anio == anio_actual and viaje_mes == mes_actual and viaje_dia < dia_actual):
-        print("Fecha no valida")
-        bandera = True
-        return bandera
-    else:
-        # Print fechas en palabras
-        dia_viaje_palabras = numero_a_palabras(viaje_dia)
-        print(f"Fecha del viaje: {dia_viaje_palabras} de {nombres_meses[viaje_mes - 1]} de {viaje_anio}")
-        bandera = False
-        return bandera
+        print("Fecha no valida. Por favor, intente nuevamente.")
+        return True
+    return False
 
-#Funcion para agregar paquetes a la matriz
+# Funcion para agregar paquetes a la matriz
 def agregar_paquete(paquetes, destino, dias, transporte, hotel, precio, disponibilidad):
     paquete = [destino, dias, transporte, hotel, precio, disponibilidad]
     paquetes.append(paquete)
 
-#Funcion para mostrar los paquetes (pueden ser todos o algunos dependiendo la busqueda)
+# Funcion para mostrar los paquetes (pueden ser todos o algunos dependiendo la busqueda)
 def mostrar_paquetes(disponibles):
     if disponibles:
         print("")
@@ -86,7 +70,121 @@ def mostrar_paquetes(disponibles):
     else:
         print("No se encontraron paquetes disponibles.")
 
-#Diccionario de funciones de busqueda
+# Funcion generar factura
+def generar_factura(paquete, clientes, cantidad_personas, fecha_viaje, numero_reserva):
+    print()
+    print("-" * 90)
+    print("Agencia de Viajes 'Destinos Splinter'".center(90))
+    print()
+    print("Numero de reserva: ", str(numero_reserva).zfill(8))
+    print()
+    
+    print(f"Destino: {paquete[0]}".ljust(30, '.'), end="")
+    print(f"Fecha del viaje: {fecha_viaje}".rjust(60, '.')) 
+    
+    print(f"Aerolinea: {paquete[2]}".ljust(50, '.'), end="")
+    print(f"Dias: {paquete[1]}".rjust(40, '.'))
+    
+    print(f"Hotel: {paquete[3]}".ljust(50, '.'), end="")
+    print(f"Precio por persona: {paquete[4]}$".rjust(40, '.'))
+    
+    print(f"Cantidad de personas: {cantidad_personas}".ljust(50, '.'), end="")
+    print(f"Total: {paquete[4] * cantidad_personas}$".rjust(40, '.'))
+    
+    print()
+    print("Pasajeros:")
+    
+    for i in range(len(clientes)):
+        cliente = clientes[i]
+        print(f"Pasajero {i+1}: {cliente['nombre']}, DNI: {cliente['dni']}")
+    
+    print("-" * 90)
+
+# Funcion generar numero de reserva
+def generar_numero_reserva(numeros_reserva):
+    while True:
+        nuevo_numero = random.randint(100000, 999999)
+        if nuevo_numero not in numeros_reserva:
+            numeros_reserva.add(nuevo_numero)
+            break
+    return nuevo_numero
+
+# Funcion para agregar una reserva a la lista de reservas
+def agregar_reserva(paquete, clientes, cantidad_personas, fecha_viaje, numero_reserva):
+    reserva = {
+        'numero_reserva': numero_reserva,
+        'paquete': paquete,
+        'clientes': clientes,
+        'cantidad_personas': cantidad_personas,
+        'fecha_viaje': fecha_viaje
+    }
+    reservas.append(reserva)
+    
+# Funcion para mostrar las reservas
+def mostrar_reservas():
+    if reservas == []:
+        print("No hay reservas realizadas.")
+    else:
+        print("Reservas realizadas:")
+        print("")
+        print("-" * 50)
+        for reserva in reservas:
+            print(f"Numero de reserva: {reserva['numero_reserva']}")
+            print(f"Destino: {reserva['paquete'][0]}")
+            print(f"Fecha del viaje: {reserva['fecha_viaje']}")
+            print(f"Cantidad de pasajeros: {reserva['cantidad_personas']}")
+            print("Clientes:")
+            for cliente in reserva['clientes']:
+                print(f"  Nombre: {cliente['nombre']}, DNI: {cliente['dni']}")
+            print("-" * 50)
+
+# Programa principal
+
+# Matriz de paquetes hardcodeada
+# [Destino, Dias, Aerolinea, Hotel, Precio, Disponibilidad]
+
+paquetes = [
+    ["Barcelona", 6, "Iberia", "Hotel NH Barcelona", 1450, 12],
+    ["Berlin", 6, "Lufthansa", "Berlin Plaza Hotel", 1500, 10],
+    ["Berlin", 8, "Delta Airlines", "Berlin Central Hotel", 1600, 8],
+    ["Ciudad de Mexico", 9, "Aeromexico", "Hotel CDMX", 1350, 4],
+    ["Londres", 4, "British Airways", "The London Inn", 1500, 5],
+    ["Londres", 5, "Aerolineas Argentinas", "The London Inn", 1550, 8],
+    ["Londres", 5, "British Airways", "The London Inn", 1450, 2],
+    ["Londres", 6, "Lufthansa", "The London Inn", 1600, 2],
+    ["Madrid", 7, "Iberia", "Hotel Madrid Centro", 1550, 9],
+    ["Madrid", 5, "Air Europa", "Hotel Madrid Centro", 1500, 3],
+    ["Nueva Delhi", 8, "British Airways", "Delhi Palace Hotel", 2100, 10],
+    ["Nueva York", 10, "Aerolineas Splinter", "NYC Plaza", 1800, 8],
+    ["Nueva York", 12, "Delta Airlines", "NYC Plaza", 1900, 12],
+    ["Nueva York", 8, "Delta Airlines", "The Central Park North", 1600, 2],
+    ["Rio de Janeiro", 7, "LATAM Airlines", "Hotel Atlantico Copacabana", 1050, 10],
+    ["Rio de Janeiro", 5, "Aerolinas Argentinas", "Hotel Atlantico Copacabana", 900, 5],
+    ["Rio de Janeiro", 10, "LATAM Airlines", "Hotel Atlantico Copacabana", 1250, 20],
+    ["Seul", 5, "Delta Airlines", "Seoul Central Hotel", 1450, 15],
+    ["Sidney", 8, "Delta Airlines", "Sydney Harbour Hotel", 2200, 4],
+    ["Tokyo", 7, "Delta Airlines", "Tokyo Grand Hotel", 2000, 5],
+    ["Paris", 7, "Air France", "Hotel Parisien", 1700, 8],
+    ["Paris", 5, "Air France", "Hotel Parisien", 1400, 9]
+]
+
+# Lista de los nombres de los meses
+nombres_meses = [
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+]
+
+# Conjunto para almacenar los numeros de reserva
+numeros_reserva = set()
+
+# Lista para almacenar las reservas
+reservas = []
+
+# Obtener fecha actual
+fecha_actual = time.localtime()
+anio_actual, mes_actual, dia_actual = fecha_actual.tm_year, fecha_actual.tm_mon, fecha_actual.tm_mday
+
+# Diccionario de funciones de busqueda
 criterios_busqueda = {
     "1": lambda paquetes, destino: [paquete for paquete in paquetes if paquete[0] == destino],
     "2": lambda paquetes, dias: [paquete for paquete in paquetes if paquete[1] == int(dias)],
@@ -95,20 +193,15 @@ criterios_busqueda = {
     "5": lambda paquetes, aerolinea: [paquete for paquete in paquetes if paquete[2] == aerolinea]
 }
 
-# Programa Principal
-
-# Obtener fecha actual
-fecha_actual = time.localtime()
-anio_actual, mes_actual, dia_actual = fecha_actual.tm_year, fecha_actual.tm_mon, fecha_actual.tm_mday
-
 print("--- Sistema de busqueda y reserva de paquetes turisticos ---")
 
 opcion = 0
-while opcion != 4:
+while opcion != 5:
     print("\n1. Agregar paquete")
-    print("2. Busqueda y reserva de paquete") 
+    print("2. Busqueda y reserva de paquete")
     print("3. Mostrar todos los paquetes disponibles")
-    print("4. Salir")
+    print("4. Mostrar reservas")
+    print("5. Salir")
         
     opcion = int(input("\nSeleccione una opcion: "))
     print("")
@@ -127,39 +220,45 @@ while opcion != 4:
         
         cantidad_personas = int(input("¿Cuantas personas van a viajar?: "))
         
-        #Validamos el numero de personas
+        # validamos el numero de personas
         while not (0 < cantidad_personas <= 30):
-                print("Numero de personas no válido, ingrese de nuevo.")
+                print("Numero de personas no valido, ingrese de nuevo.")
                 cantidad_personas = int(input("¿Cuantas personas van a viajar?: "))
         
-        #Empezamos con la busqueda
-        print("Seleccione el criterio de busqueda: ")
-        print("1. Por destino")
-        print("2. Por dias")
-        print("3. Por precio")
-        print("4. Por hotel")
-        print("5. Por aerolinea")
+        paquetes_buscados = [paquete for paquete in paquetes if paquete[5] >= cantidad_personas]
 
-        mensajes_busqueda = {
-            "1": "Ingrese el destino que desea buscar: ",
-            "2": "Ingrese la cantidad de dias que desea buscar: ",
-            "3": "Ingrese el precio maximo que desea buscar: ",
-            "4": "Ingrese el hotel que desea buscar: ",
-            "5": "Ingrese la areolinea que desa buscar: "
-        }
+        if paquetes_buscados == []:
+            print(f"No hay paquetes disponibles con una disponibilidad para {cantidad_personas} personas.")
         
-        while True:
-            criterio_opcion = input("Ingrese el numero de criterio de busqueda: ")
+        else:
+            # empezamos con la busqueda
+            print("Seleccione el criterio de busqueda: ")
+            print("1. Por destino")
+            print("2. Por dias")
+            print("3. Por precio")
+            print("4. Por hotel")
+            print("5. Por aerolinea")
+
+            mensajes_busqueda = {
+                "1": "Ingrese el destino que desea buscar: ",
+                "2": "Ingrese la cantidad de dias que desea buscar: ",
+                "3": "Ingrese el precio maximo que desea buscar: ",
+                "4": "Ingrese el hotel que desea buscar: ",
+                "5": "Ingrese la areolinea que desa buscar: "
+            }
             
-            if criterio_opcion in criterios_busqueda:
-                valor = input(mensajes_busqueda[criterio_opcion])
-                #Busqueda de paquetes con diccionario de funciones
-                paquetes_buscados = criterios_busqueda[criterio_opcion](paquetes, valor)
-                mostrar_paquetes(paquetes_buscados)
-                break
-            
-            else:
-                print("Opcion no valida. Intente de nuevo.")
+            while True:
+                criterio_opcion = input("Ingrese el numero de criterio de busqueda: ")
+                
+                if criterio_opcion in criterios_busqueda:
+                    valor = input(mensajes_busqueda[criterio_opcion])
+                    # busqueda de paquetes con diccionario de funciones
+                    paquetes_buscados = criterios_busqueda[criterio_opcion](paquetes_buscados, valor)
+                    mostrar_paquetes(paquetes_buscados)
+                    break
+                
+                else:
+                    print("Opcion no valida. Intente de nuevo.")
         
         while len(paquetes_buscados) > 1:
             print("\nAun hay varios paquetes disponibles. Refine su busqueda")
@@ -174,7 +273,7 @@ while opcion != 4:
                 
                 if criterio_opcion in criterios_busqueda:
                     valor = input(mensajes_busqueda[criterio_opcion])
-                    #Busqueda de paquetes con diccionario de funciones
+                    # busqueda de paquetes con diccionario de funciones
                     paquetes_buscados = criterios_busqueda[criterio_opcion](paquetes_buscados, valor)
                     mostrar_paquetes(paquetes_buscados)
                     break
@@ -185,27 +284,47 @@ while opcion != 4:
         if len(paquetes_buscados) == 1:
             print("\n--- Reserva de Paquete ---")
             reservar = input("¿Desea reservar este paquete? (si/no): ")
+
             if reservar == "si":
                 bandera = True
                 while bandera == True:
                     fecha_viaje = input("Ingrese la fecha del viaje (yyyy-mm-dd): ")
-                    # Splitear la fecha para convertir a enteros
+                    # splitear la fecha para convertir a enteros
                     viaje_anio, viaje_mes, viaje_dia = map(int, fecha_viaje.split('-'))
-                    bandera = print_fechas(viaje_anio,viaje_mes,viaje_dia, anio_actual, mes_actual, dia_actual)
-                clientes = set()  # conjunto para almacenar los clientes sin duplicados
+                    bandera = validar_fecha(viaje_anio, viaje_mes, viaje_dia, anio_actual, mes_actual, dia_actual)
+                
+                #poner la fecha en palabras
+                fecha_viaje = f"{numero_a_palabras(viaje_dia)} de {nombres_meses[viaje_mes - 1]} de {viaje_anio}"
+                clientes = []  # lista para almacenar los datos de los clientes
+                
                 for i in range(cantidad_personas):
                     print(f"Cliente {i+1}:")
                     nombre = input("Ingrese el nombre del cliente: ")
                     dni = int(input("Ingrese el DNI del cliente: "))
-                    edad = int(input("Ingrese la edad del cliente: "))
-                print("Paquete reservado con exito.") 
+                    cliente = {'nombre': nombre, 'dni': dni}
+                    clientes.append(cliente)
+                
+                # conjunto para almacenar los numeros de reserva
+                numero_reserva = generar_numero_reserva(numeros_reserva)
+                
+                agregar_reserva(paquetes_buscados[0], clientes, cantidad_personas, fecha_viaje, numero_reserva)
+
+                print("Paquete reservado con exito. Generando factura...")
+                generar_factura(paquetes_buscados[0], clientes, cantidad_personas, fecha_viaje, numero_reserva)
+
+                # actualizar disponibilidad del paquete
+                paquetes_buscados[0][5] -= cantidad_personas
+
             else:
                 print("No se realizo la reserva.")
             
     elif opcion == 3:
         mostrar_paquetes(paquetes)
-
+        
     elif opcion == 4:
+        mostrar_reservas()
+
+    elif opcion == 5:
         print("Saliendo del sistema...")
         
     else:
